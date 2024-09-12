@@ -12,6 +12,7 @@
 #include "util.h"
 #include <map>
 #include "singleton.h"
+#include "thread.h"
 
 #define SERVER_LOG_LEVEL(logger, level) \
     if(logger->GetLevel() <= level) \
@@ -157,13 +158,15 @@ class LogAppender
 friend class Logger;
 public:
     typedef std::shared_ptr<LogAppender> ptr;
+    typedef SMutex MutexType;
+
     LogAppender();
     virtual ~LogAppender(){};
     virtual void Log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
 
     void SetFormatter(LogFormatter::ptr val);
     void SetFormatter(const std::string& val);
-    LogFormatter::ptr GetFormatter() { return m_formatter; }
+    LogFormatter::ptr GetFormatter();
 
     LogLevel::Level GetLevel() const { return m_level; }
     void SetLevel(LogLevel::Level level) { m_level = level; }
@@ -172,6 +175,7 @@ public:
 
     virtual std::string ToYamlString() = 0;
 protected:
+    MutexType m_lock;
     bool m_hasFormatter = false;
     LogLevel::Level m_level = LogLevel::DEBUG;
     LogFormatter::ptr m_formatter;
@@ -186,6 +190,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
 friend class LoggerManager;
 public:
     typedef std::shared_ptr<Logger> ptr;
+    typedef SMutex MutexType;
 
     void Log(LogLevel::Level level, const LogEvent::ptr event);
     Logger(const std::string name = "root");
@@ -208,13 +213,14 @@ public:
 
     std::string ToYamlString();
 public:
-    std::string m_name;
+    std::string m_name; // 日志名称
     Logger::ptr m_root;
 
-private:      // 日志名称
+private:
+    MutexType m_lock;
     LogLevel::Level m_level; // 日志级别
-    std::list<LogAppender::ptr> m_appenders;        // Appender 集合
     LogFormatter::ptr m_formatter;
+    std::list<LogAppender::ptr> m_appenders;        // Appender 集合
 };
 
 
@@ -258,6 +264,8 @@ private:
 
 class LogManager {
 public:
+    typedef SMutex MutexType;
+
     LogManager();
     Logger::ptr GetLogger(const std::string& name);
 
@@ -266,8 +274,9 @@ public:
 
     std::string ToYamlString();
 private:
+    MutexType m_lock;
+    Logger::ptr m_root;    
     std::map<std::string, Logger::ptr> m_loggers;
-    Logger::ptr m_root;
 };
 
 typedef dx::Singleton<LogManager> LoggerMgr;

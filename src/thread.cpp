@@ -1,3 +1,14 @@
+/**
+ * @file thread.cpp
+ * @author Dingx (dingx@info2soft.com)
+ * @brief 
+ * 
+ * @version 0.1
+ * @date 2024-09-12
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "thread.h"
 #include "log.h"
 #include "util.h"

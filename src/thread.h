@@ -135,6 +135,40 @@ private:
     bool m_locked;
 };
 
+class SMutex {
+public:
+    typedef ScopeLockImpl<SMutex> MutexGuard;
+
+    SMutex() {
+        pthread_mutex_init(&m_mutex, nullptr);
+    }
+
+    ~SMutex() {
+        pthread_mutex_destroy(&m_mutex);
+    }
+
+    void Lock() {
+        pthread_mutex_lock(&m_mutex);
+    }
+
+    void Unlock() {
+        pthread_mutex_unlock(&m_mutex);
+    }   
+
+private:
+    pthread_mutex_t m_mutex;
+};
+
+class NullMutex {
+public:
+    typedef ScopeLockImpl<NullMutex> MutexGuard;
+    NullMutex() {}
+    ~NullMutex() {}
+
+    void Lock() {}
+    void Unlock(){}
+};
+
 class RWMutex {
 public:
     typedef ReadScopeLockImpl<RWMutex> ReadLock;
@@ -163,6 +197,19 @@ public:
 private:
     pthread_rwlock_t m_lock;
 
+};
+
+class NullRWMutex {
+public:
+    typedef ReadScopeLockImpl<NullRWMutex> ReadLock;
+    typedef WriteScopeLockImpl<NullRWMutex> WriteLock;
+
+    NullRWMutex() {}
+    ~NullRWMutex() {}
+
+    void RdLock() {}
+    void WrLock() {}
+    void Unlock() {}
 };
 
 class Thread {
