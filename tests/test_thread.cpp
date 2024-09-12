@@ -2,6 +2,8 @@
 
 dx::Logger::ptr g_logger = SERVER_LOG_ROOT();
 
+int cnt = 0;
+dx::RWMutex s_mutex;
 
 void fun1() {
     SERVER_LOG_INFO(g_logger) << "thread_id: " << dx::Thread::GetNameS()
@@ -9,7 +11,10 @@ void fun1() {
         << " id: " << dx::GetThreadId()
         << " this.id: " << dx::Thread::GetThis()->GetId();
     
-    sleep(20);
+    for(int i = 0; i < 1000000; i++) {
+        dx::RWMutex::WriteLock lock(s_mutex);
+        cnt++;
+    }
 }
 
 void fun2 () {
@@ -32,6 +37,6 @@ int main(int argc, char** argv) {
     }
 
     SERVER_LOG_INFO(g_logger) << "thread test end";
-
+    SERVER_LOG_INFO(g_logger) << "cnt=" << cnt;
     return 0;
 }

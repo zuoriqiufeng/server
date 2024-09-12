@@ -37,6 +37,8 @@ Thread::Thread(std::function<void()> cb, const std::string& name)
             << " name=" << name;
         throw std::logic_error("pthread_create error");
     }
+
+    m_sem.Wait();
 }
 
 Thread::~Thread() {
@@ -67,10 +69,34 @@ void* Thread::Run(void* arg) {
     std::function<void()>  cb;
     cb.swap(thread->m_cb);
 
+    thread->m_sem.Notify();
+
     cb();
     return 0;
 } 
 
+SSemaphore::SSemaphore(uint32_t cnt) {
 
+    if(sem_init(&m_sem, 0, cnt)) {
+        throw std::logic_error("sem_init error");
+    }
+}
+
+SSemaphore::~SSemaphore() {
+    sem_destroy(&m_sem);  
+}
+
+void SSemaphore::Wait() {
+    if(sem_wait(&m_sem)) {
+       throw std::logic_error("sem_wait error"); 
+    }
+}
+
+void SSemaphore::Notify() {
+    if(sem_post(&m_sem)) {
+        throw std::logic_error("sem_post error");
+    }
+}
+    
 
 }

@@ -11,10 +11,14 @@ message(DEBUG  "${YAML_CPP_INCLUDE_DIR}")
 
 include_directories(/usr/local/inclue)
 include_directories(${PROJECT_SOURCE_DIR})
+
+find_package (PkgConfig REQUIRED)
+pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
+
 include_directories(${YAML_CPP_INCLUDE_DIR})
+link_libraries(${YAML_CPP_LIBRARIES})
 
-
-link_libraries(/usr/local/lib/libyaml-cpp.so)
+# link_libraries(/usr/local/lib/libyaml-cpp.so)
 file(GLOB LIB_SRC "src/*.cpp")
 # 
 add_library(server SHARED ${LIB_SRC})
