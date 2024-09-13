@@ -241,13 +241,9 @@ private:
 class CASLock {
 public:
     typedef ScopeLockImpl<CASLock> MutexGuard;
-    CASLock() {
-        m_mutex.clear();
-    }
+    CASLock() : m_mutex(ATOMIC_FLAG_INIT) {}
 
-    ~CASLock() {
-
-    }
+    ~CASLock() {}
 
     void Lock() {
         while(std::atomic_flag_test_and_set_explicit(&m_mutex, std::memory_order_acquire));

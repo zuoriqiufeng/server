@@ -20,7 +20,12 @@
 
 namespace dx {
 
-
+/**
+ * @brief LogLevel 转成string
+ * 
+ * @param  level
+ * @return const char* 
+ */
 const char* LogLevel::ToString(LogLevel::Level level)
 {
     switch (level)
@@ -42,6 +47,12 @@ const char* LogLevel::ToString(LogLevel::Level level)
     return "UNKNOW";
 }
 
+/**
+ * @brief 从string 转成level
+ * 
+ * @param  str
+ * @return LogLevel::Level 
+ */
 LogLevel::Level LogLevel::FromString(const std::string& str) {
 #define XX(level, name) \
     if(str == #name) \
@@ -60,6 +71,10 @@ LogLevel::Level LogLevel::FromString(const std::string& str) {
 #undef XX
 }  
 
+/**
+ * @brief 日志添加的消息，格式输出
+ * 
+ */
 class MessageFormatItem : public LogFormatter::FormatItem {
 public:
     MessageFormatItem(const std::string &fmt = ""){}
@@ -68,6 +83,10 @@ public:
     }
 };
 
+/**
+ * @brief 日志级别格式输出
+ * 
+ */
 class LevelFormatItem : public LogFormatter::FormatItem {
 public:
     LevelFormatItem(const std::string &fmt = ""){}
@@ -76,6 +95,10 @@ public:
     }
 };
 
+/**
+ * @brief \t格式输出
+ * 
+ */
 class ElapseFormatItem : public LogFormatter::FormatItem {
 public:
     ElapseFormatItem(const std::string &fmt = ""){}
@@ -84,6 +107,10 @@ public:
     }
 };
 
+/**
+ * @brief 日志器名称格式输出
+ * 
+ */
 class NameFormatItem : public LogFormatter::FormatItem {
 public:
     NameFormatItem(const std::string &fmt = ""){}
@@ -93,6 +120,10 @@ public:
 };
 
 
+/**
+ * @brief 线程id 格式输出
+ * 
+ */
 class ThreadIdFormatItem : public LogFormatter::FormatItem {
 public:
     ThreadIdFormatItem(const std::string &fmt = ""){}
