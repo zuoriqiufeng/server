@@ -3,30 +3,30 @@
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
-// dx::ConfigVar<int>::ptr g_int_value_config = 
-//     dx::Config::Lookup("system.port", (int)8080, "system port");
+dx::ConfigVar<int>::ptr g_int_value_config = 
+    dx::Config::Lookup("system.port", (int)8080, "system port");
 
 
-// dx::ConfigVar<float>::ptr g_float_value_config = 
-//     dx::Config::Lookup("system.value", (float)10.2f, "system value");
+dx::ConfigVar<float>::ptr g_float_value_config = 
+    dx::Config::Lookup("system.value", (float)10.2f, "system value");
 
-// dx::ConfigVar<std::vector<int>>::ptr g_int_vec_config = 
-//     dx::Config::Lookup("system.int_vec", std::vector<int>{1, 2}, "system in vec");
+dx::ConfigVar<std::vector<int>>::ptr g_int_vec_config = 
+    dx::Config::Lookup("system.int_vec", std::vector<int>{1, 2}, "system in vec");
     
-// dx::ConfigVar<std::list<int>>::ptr g_int_list_config = 
-//     dx::Config::Lookup("system.int_list", std::list<int>{1, 2}, "system in list");
+dx::ConfigVar<std::list<int>>::ptr g_int_list_config = 
+    dx::Config::Lookup("system.int_list", std::list<int>{1, 2}, "system in list");
 
-// dx::ConfigVar<std::set<int>>::ptr g_int_set_config = 
-//     dx::Config::Lookup("system.int_set", std::set<int>{1, 2}, "system in set");
+dx::ConfigVar<std::set<int>>::ptr g_int_set_config = 
+    dx::Config::Lookup("system.int_set", std::set<int>{1, 2}, "system in set");
 
-// dx::ConfigVar<std::unordered_set<int>>::ptr g_int_unordered_set_config = 
-//     dx::Config::Lookup("system.int_unordered_set", std::unordered_set<int>{1, 2}, "system in unordered_set");
+dx::ConfigVar<std::unordered_set<int>>::ptr g_int_unordered_set_config = 
+    dx::Config::Lookup("system.int_unordered_set", std::unordered_set<int>{1, 2}, "system in unordered_set");
 
-// dx::ConfigVar<std::map<std::string, int>>::ptr g_str_int_map_config = 
-//     dx::Config::Lookup("system.str_int_map", std::map<std::string, int> {{"k", 2}, }, "system in map");
+dx::ConfigVar<std::map<std::string, int>>::ptr g_str_int_map_config = 
+    dx::Config::Lookup("system.str_int_map", std::map<std::string, int> {{"k", 2}, }, "system in map");
 
-// dx::ConfigVar<std::unordered_map<std::string, int>>::ptr g_str_int_umap_config = 
-//     dx::Config::Lookup("system.str_int_umap", std::unordered_map<std::string, int> {{"k", 2}, }, "system in umap");
+dx::ConfigVar<std::unordered_map<std::string, int>>::ptr g_str_int_umap_config = 
+    dx::Config::Lookup("system.str_int_umap", std::unordered_map<std::string, int> {{"k", 2}, }, "system in umap");
 
 /** 
 void print_yaml(const YAML::Node& node, int level) {
@@ -172,7 +172,7 @@ void test_class() {
         SERVER_LOG_INFO(SERVER_LOG_ROOT()) <<  prefix  << ": size="<< m.size();\
     }
 
-    g_person->AddListener(10, [](const Person& old_val, const Person& new_val) {
+    g_person->AddListener([](const Person& old_val, const Person& new_val) {
         SERVER_LOG_INFO(SERVER_LOG_ROOT()) << "old_val=" << old_val.ToString() << " new_val=" << new_val.ToString();
     });
 
@@ -211,7 +211,13 @@ int main(int argc, char** argv) {
     // test_yaml();
     // test_class();
     // printf("dsadas\n");
-    test_log();
+    // test_log();
+    
+    dx::Config::Visit([] (dx::ConfigVarBase::ptr var) {
+        SERVER_LOG_INFO(SERVER_LOG_ROOT()) << "name: " << var->GetName() << " description: " << var->GetDescription()
+                                    << " typename: " << var->GetTypeName() << " value: " << var->ToString();
+
+    });
     return 0;
 }
 

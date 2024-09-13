@@ -9,6 +9,7 @@
  * 
  */
 #include "src/config.h"
+#include "thread.h"
 
 namespace dx
 {
@@ -71,10 +72,18 @@ void Config::LoarFromYaml(const YAML::Node &node)
 
 ConfigVarBase::ptr Config::LookupBase(const std::string &name)
 {
+    MutexType::ReadLock g(GetMutex());
     auto it = GetDatas().find(name);
     return it == GetDatas().end() ? nullptr : it->second;
 }
 
+void Config::Visit(std::function<void(ConfigVarBase::ptr)> cb) {
+    MutexType::ReadLock g(GetMutex());
+    ConfigVarMap& m = GetDatas();
+    for(auto it = m.begin(); it != m.end(); it++) {
+        cb(it->second);
+    }
+}
 
 
 }

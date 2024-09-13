@@ -36,20 +36,27 @@ int main(int argc, char** argv) {
 
     std::vector<dx::Thread::ptr> thrs;
 
-    for(int i = 0; i < 2; i++) {
-        dx::Thread::ptr thr(new dx::Thread(&fun3, "name_" + std::to_string(i * 2)));
-        dx::Thread::ptr thr2(new dx::Thread(&fun2, "name_" + std::to_string(i * 2 + 1)));
+    // for(int i = 0; i < 2; i++) {
+    //     dx::Thread::ptr thr(new dx::Thread(&fun3, "name_" + std::to_string(i * 2)));
+    //     dx::Thread::ptr thr2(new dx::Thread(&fun2, "name_" + std::to_string(i * 2 + 1)));
 
-        thrs.push_back(thr);
-        thrs.push_back(thr2);
-    }
+    //     thrs.push_back(thr);
+    //     thrs.push_back(thr2);
+    // }
 
 
-    for(size_t i = 0; i < thrs.size(); i++) {
-        thrs[i]->Join();
-    }
+    // for(size_t i = 0; i < thrs.size(); i++) {
+    //     thrs[i]->Join();
+    // }
 
     SERVER_LOG_INFO(g_logger) << "thread test end";
     SERVER_LOG_INFO(g_logger) << "cnt=" << cnt;
+
+    dx::Config::Visit([] (dx::ConfigVarBase::ptr var) {
+        SERVER_LOG_INFO(g_logger) << "name: " << var->GetName() << " description: " << var->GetDescription()
+                                    << " typename: " << var->GetTypeName() << " value: " << var->ToString();
+
+    });
+
     return 0;
 }

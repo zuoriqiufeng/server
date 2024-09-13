@@ -446,7 +446,7 @@ void FileLogAppender::Log(std::shared_ptr<Logger> logger, LogLevel::Level level,
             Reopen();
             m_lastTime = now;
         }
-        
+
         MutexType::MutexGuard g(m_lock);
         m_filestream << m_formatter->Format(logger, level, event);
     }
@@ -827,7 +827,8 @@ dx::ConfigVar<std::set<LogDefine> >::ptr g_log_defines = dx::Config::Lookup("log
 
 struct LogIniter {
     LogIniter() {
-        g_log_defines->AddListener(0xF1E231, [](const std::set<LogDefine>& old_val, const std::set<LogDefine>& new_val) {
+        
+        g_log_defines->AddListener([](const std::set<LogDefine>& old_val, const std::set<LogDefine>& new_val) {
             // 1 新增 & 修改
             SERVER_LOG_INFO(SERVER_LOG_ROOT()) << "on_logger_conf_changed";
             for(auto& i : new_val) {
