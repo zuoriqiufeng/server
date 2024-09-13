@@ -18,7 +18,7 @@
 #include "singleton.h"
 #include "util.h"
 #include "thread.h"
-
+#include "macro.h"
 
 
 #endif

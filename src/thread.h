@@ -270,6 +270,10 @@ public:
     const std::string& GetName() const { return m_name; }
     pid_t GetId() const { return m_id; }
 
+    /**
+     * @brief 线程中止
+     * 
+     */
     void Join();
 
     static Thread* GetThis();
@@ -282,6 +286,12 @@ private:
     Thread(const Thread&&) = delete;
     Thread& operator=(const Thread&) = delete;
 
+    /**
+     * @brief 线程运行函数
+     * 
+     * @param  arg 运行参数
+     * @return void*
+     */
     static void* Run(void *arg);
 private:
     pid_t m_id;

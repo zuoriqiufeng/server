@@ -9,7 +9,6 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O3 -g -std=c++11 -Wall -Wno-depre
 #find_package(yaml-cpp CONFIG REQUIRED)
 message(DEBUG  "${YAML_CPP_INCLUDE_DIR}")
 
-include_directories(/usr/local/inclue)
 include_directories(${PROJECT_SOURCE_DIR})
 
 find_package (PkgConfig REQUIRED)
@@ -39,9 +38,13 @@ force_redefine_file_macro_for_sources(test_config)
 
 
 add_executable(test_thread tests/test_thread.cpp)
+add_executable(test_util tests/test_util.cpp)
 #add_dependencies(test_thread server)
 force_redefine_file_macro_for_sources(test_thread)
 # target_link_libraries(test_thread server)
+
+SET(CMAKE_CACHEFILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
+SET(CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

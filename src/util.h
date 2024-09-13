@@ -13,12 +13,13 @@
 #include <thread>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string>
+#include <vector>
 
 namespace dx {
 
 /**
- * @brief 
+ * @brief 返回线程Id
  * 
  * @return 
  */
@@ -32,7 +33,15 @@ pid_t GetThreadId();
 uint32_t GetFiberId();
 
 
-
+/**
+ * @brief 打印堆栈
+ * 
+ * @param  bt 栈数组
+ * @param  size 栈层数
+ * @param  skip 跳过前面几层
+ */
+void Backtrace(std::vector<std::string>& bt, int size, int skip = 1);
+std::string BacktraceToString(int size, int skip = 2, const std::string& prefix = "");
 
 }
 
