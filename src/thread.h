@@ -21,6 +21,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdint.h>
+#include <atomic>
 
 namespace dx {
 
@@ -210,6 +211,53 @@ public:
     void RdLock() {}
     void WrLock() {}
     void Unlock() {}
+};
+
+class SpinLock {
+public:
+    typedef ScopeLockImpl<SpinLock> MutexGuard;
+
+    SpinLock() {
+        pthread_spin_init(&m_mutex, PTHREAD_PROCESS_PRIVATE);
+    }
+
+    ~SpinLock() {
+        pthread_spin_destroy(&m_mutex);
+    }
+
+    void Lock() {
+        pthread_spin_lock(&m_mutex);
+    }
+
+    void Unlock() {
+        pthread_spin_unlock(&m_mutex);
+    }
+
+private:
+    pthread_spinlock_t m_mutex;
+
+};
+
+class CASLock {
+public:
+    typedef ScopeLockImpl<CASLock> MutexGuard;
+    CASLock() {
+        m_mutex.clear();
+    }
+
+    ~CASLock() {
+
+    }
+
+    void Lock() {
+        while(std::atomic_flag_test_and_set_explicit(&m_mutex, std::memory_order_acquire));
+    }
+
+    void Unlock(){
+        m_mutex.clear(std::memory_order_release);
+    }
+private:
+    volatile std::atomic_flag m_mutex;
 };
 
 class Thread {

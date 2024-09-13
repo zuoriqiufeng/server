@@ -441,6 +441,12 @@ bool  FileLogAppender::Reopen() {
 
 void FileLogAppender::Log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
     if(level >= m_level) {
+        uint64_t now = time(0);
+        if(now != m_lastTime) {
+            Reopen();
+            m_lastTime = now;
+        }
+        
         MutexType::MutexGuard g(m_lock);
         m_filestream << m_formatter->Format(logger, level, event);
     }

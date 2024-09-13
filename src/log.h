@@ -158,7 +158,7 @@ class LogAppender
 friend class Logger;
 public:
     typedef std::shared_ptr<LogAppender> ptr;
-    typedef SMutex MutexType;
+    typedef SpinLock MutexType;
 
     LogAppender();
     virtual ~LogAppender(){};
@@ -190,7 +190,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
 friend class LoggerManager;
 public:
     typedef std::shared_ptr<Logger> ptr;
-    typedef SMutex MutexType;
+    typedef SpinLock MutexType;
 
     void Log(LogLevel::Level level, const LogEvent::ptr event);
     Logger(const std::string name = "root");
@@ -260,11 +260,12 @@ private:
 
     std::string     m_name; // 文件名
     std::ofstream   m_filestream; // 
+    uint64_t        m_lastTime;
 };
 
 class LogManager {
 public:
-    typedef SMutex MutexType;
+    typedef SpinLock MutexType;
 
     LogManager();
     Logger::ptr GetLogger(const std::string& name);
