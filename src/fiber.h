@@ -29,7 +29,8 @@ public:
         HOLD,
         EXEC,
         TERM,
-        READY
+        READY,
+        EXCEPT
     };
 public:
     Fiber(std::function<void()> cb, size_t stacksize = 0);
@@ -38,6 +39,8 @@ public:
     void Reset(std::function<void()> cb);
     void SwapIn();
     void SwapOut();
+    uint64_t GetId() const { return m_id;};
+
 public:
     static void SetThis(Fiber* f);
     static Fiber::ptr GetThis();
@@ -45,6 +48,7 @@ public:
     static void YieldToHold();
 
     static uint64_t TotalFibers();
+    static uint64_t GetFiberId();
     static void MainFunc();
 
 private:

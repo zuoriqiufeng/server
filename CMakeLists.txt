@@ -39,7 +39,9 @@ force_redefine_file_macro_for_sources(test_config)
 
 add_executable(test_thread tests/test_thread.cpp)
 add_executable(test_util tests/test_util.cpp)
+add_executable(test_fiber tests/test_fiber.cpp)
 #add_dependencies(test_thread server)
+force_redefine_file_macro_for_sources(test_fiber)
 force_redefine_file_macro_for_sources(test_thread)
 # target_link_libraries(test_thread server)
 

@@ -85,7 +85,7 @@ public:
     int32_t GetLine() const { return m_line; }
     uint32_t GetElapse() const { return m_elapse; }
     int32_t GetThreadId() const { return m_threadId; }
-    uint32_t GetFiberId() const { return m_fiberId;}
+    uint64_t GetFiberId() const { return m_fiberId;}
     uint64_t GetTime() const { return m_time; }
     std::string GetContent() const { return m_ss.str();}
     std::shared_ptr<Logger> GetLogger() const { return m_logger; }
@@ -99,7 +99,7 @@ private:
     int32_t m_line = 0;           // 行号
     uint32_t m_elapse = 0;        // 程序启动开始到现在的毫秒数
     uint32_t m_threadId = 0;       // 线程id
-    uint32_t m_fiberId = 0;       // 协程id
+    uint64_t m_fiberId = 0;       // 协程id
     uint64_t m_time = 0;          // 时间戳
     std::stringstream m_ss;
 

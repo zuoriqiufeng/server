@@ -17,6 +17,8 @@
 #include <vector>
 #include <execinfo.h>
 #include "log.h"
+#include "macro.h"
+#include "fiber.h"
 
 dx::Logger::ptr g_logger = SERVER_LOG_NAME("system");
 
@@ -26,9 +28,9 @@ pid_t GetThreadId() {
     return (pid_t)syscall(SYS_gettid);
 }
 
-uint32_t GetFiberId() {
-
-    return 0;
+uint64_t GetFiberId() {
+    return dx::Fiber::GetFiberId();
+  
 }
 
 void Backtrace(std::vector<std::string>& bt, int size, int skip) {

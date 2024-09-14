@@ -30,8 +30,7 @@ pid_t GetThreadId();
  * 
  * @return uint32_t 
  */
-uint32_t GetFiberId();
-
+uint64_t GetFiberId();
 
 /**
  * @brief 打印堆栈
