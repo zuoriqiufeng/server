@@ -138,7 +138,7 @@ void Fiber::SwapOut() {
 /**
  * @brief 设置当前协程
  * 
- * @param  f
+ * @param  f 协程指针
  */
 void Fiber::SetThis(Fiber* f) {
     t_fiber = f;
@@ -216,7 +216,6 @@ void Fiber::MainFunc() {
         SERVER_LOG_ERROR(g_logger) << "Fiber Except"; 
     }
 
-    SERVER_LOG_DEBUG(g_logger) << "Fiber_" << cur->m_id << " Run end";
     // 释放指针
     auto raw_ptr = cur.get();
     cur.reset();

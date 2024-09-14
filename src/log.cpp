@@ -132,6 +132,18 @@ public:
     }
 };
 
+/**
+ * @brief 线程名称 格式输出
+ * 
+ */
+class ThreadNameFormatItem : public LogFormatter::FormatItem {
+public:
+    ThreadNameFormatItem(const std::string &fmt = ""){}
+    void Format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+        os << event->GetThreadName();
+    }
+};
+
 class FiberIdFormatItem : public LogFormatter::FormatItem {
 public:
     FiberIdFormatItem(const std::string &fmt = ""){}
@@ -215,7 +227,19 @@ std::stringstream& LogEventWrap::GetSS() {
     return m_event->GetSS();
 }
 
-
+/**
+ * @brief Construct a new Log Event:: Log Event object
+ * 
+ * @param  logger
+ * @param  level
+ * @param  file
+ * @param  line
+ * @param  elapse
+ * @param  thread_id
+ * @param  fiber_id
+ * @param  time
+ * @param  thread_name
+ */
 LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time, const std::string& thread_name) 
     : m_file(file),
     m_line(line),
@@ -223,8 +247,9 @@ LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const 
     m_threadId(thread_id), 
     m_fiberId(fiber_id),
     m_time(time),
-    m_logger(logger),
-    m_level(level) {
+    m_threadName(thread_name),
+    m_level(level),
+    m_logger(logger) {
 
 }
 
@@ -259,10 +284,16 @@ void LogEvent::Format(const char* fmt, va_list al) {
 Logger::Logger(const std::string name)
     : m_name(name),
     m_level(LogLevel::DEBUG) {
-    m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+    m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
 
 }
 
+/**
+ * @brief Logger 的打印日志函数
+ * 
+ * @param  level
+ * @param  event
+ */
 void Logger::Log(LogLevel::Level level, const LogEvent::ptr event) {
     if(level >= m_level) {
         auto self = shared_from_this();
@@ -393,6 +424,11 @@ void LogAppender::SetFormatter(LogFormatter::ptr val) {
         m_hasFormatter = false;
 }
 
+/**
+ * @brief 设置Appender的 formatter
+ * 
+ * @param  val
+ */
 void LogAppender::SetFormatter(const std::string& val) {
     MutexType::MutexGuard g(m_lock);
     dx::LogFormatter::ptr new_val(new LogFormatter(val));
@@ -414,7 +450,7 @@ StdoutLogAppender::StdoutLogAppender(){}
 StdoutLogAppender::~StdoutLogAppender(){}
 
 /**
- * @brief 
+ * @brief 打印到控制台的日志
  * 
  * @param  logger           
  * @param  level            
@@ -632,7 +668,8 @@ void LogFormatter::Init() {
         XX(f, FilenameFormatItem),
         XX(l, LineFormatItem),
         XX(T, TabFormatItem),
-        XX(F, FiberIdFormatItem)
+        XX(F, FiberIdFormatItem),
+        XX(N, ThreadNameFormatItem)
 #undef XX
     };
 
@@ -732,7 +769,7 @@ struct LogAppenderDefine {
 }; 
 
 /**
- * @brief 
+ * @brief Log 在yaml文件中的定义
  * 
  */
 struct LogDefine {

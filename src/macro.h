@@ -1,5 +1,5 @@
 /**
- * @file macro.h
+ * @file macro.h 定义Assert 顺便打印堆栈
  * @author Dingx (dingx@info2soft.com)
  * @brief 
  * 

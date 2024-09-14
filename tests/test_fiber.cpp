@@ -9,7 +9,7 @@ void run_in_fiber() {
     dx::Fiber::GetThis()->YieldToHold();
 }
 
-int main(int argc, char** argv) {
+void test_fiber() {
     dx::Fiber::GetThis();
     SERVER_LOG_INFO(g_logger) << "main begin: ";
     
@@ -19,5 +19,19 @@ int main(int argc, char** argv) {
     fiber->SwapIn();
     SERVER_LOG_INFO(g_logger) << "main after end";
     fiber->SwapIn();
+}
+
+int main(int argc, char** argv) {
+    dx::Thread::SetNameS("main");
+    
+    std::vector<dx::Thread::ptr> thrs;
+    for(int i = 0; i < 3; i++) {
+        dx::Thread::ptr th = dx::Thread::ptr(new dx::Thread(test_fiber, "name_" + std::to_string(i)));
+        thrs.push_back(th);
+    }
+
+    for(int i = 0; i < 3; i++) {
+        thrs[i]->Join();
+    }
     return 0;
 }

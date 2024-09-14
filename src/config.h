@@ -24,6 +24,7 @@
 #include <list>
 #include <functional>
 #include "thread.h"
+#include "mutex.h"
 
 
 namespace dx {

@@ -13,11 +13,12 @@
 #include <map>
 #include "singleton.h"
 #include "thread.h"
+#include "mutex.h"
 
 #define SERVER_LOG_LEVEL(logger, level) \
     if(logger->GetLevel() <= level) \
         dx::LogEventWrap(dx::LogEvent::ptr(new dx::LogEvent(logger, level, __FILE__, __LINE__, 0, dx::GetThreadId(), \
-        dx::GetFiberId(), time(0), ""))).GetSS()
+        dx::GetFiberId(), time(0), dx::Thread::GetNameS()))).GetSS()
 
 #define SERVER_LOG_DEBUG(logger) SERVER_LOG_LEVEL(logger, dx::LogLevel::DEBUG)
 #define SERVER_LOG_INFO(logger) SERVER_LOG_LEVEL(logger, dx::LogLevel::INFO)
@@ -28,7 +29,7 @@
 #define SERVER_LOG_FMT_LEVEL(logger, level, fmt, ...) \
     if(logger->GetLevel() <= level) \
         dx::LogEventWrap(dx::LogEvent::ptr(new dx::LogEvent(logger, level, __FILE__, __LINE__, 0, dx::GetThreadId(), \
-        dx::GetFiberId(), time(0), ""))).GetEvent()->Format(fmt, __VA_ARGS__)
+        dx::GetFiberId(), time(0), dx::Thread::GetNameS()))).GetEvent()->Format(fmt, __VA_ARGS__)
 
 #define SERVER_LOG_FMT_DEBUG(logger, fmt, ...) SERVER_LOG_FMT_LEVEL(logger, dx::LogLevel::DEBUG, fmt,  __VA_ARGS__)
 #define SERVER_LOG_FMT_INFO(logger, fmt, ...) SERVER_LOG_FMT_LEVEL(logger, dx::LogLevel::INFO, fmt, __VA_ARGS__)
@@ -78,7 +79,16 @@ class LogEvent
 public:
     typedef std::shared_ptr<LogEvent> ptr;
 
-    LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t line, uint32_t elapace, uint32_t thread_id, uint32_t fiber_id, uint64_t time, const std::string& thread_name);
+    LogEvent(std::shared_ptr<Logger> logger, 
+            LogLevel::Level level, 
+            const char* file, 
+            int32_t line, 
+            uint32_t elapace, 
+            uint32_t thread_id, 
+            uint32_t fiber_id, 
+            uint64_t time, 
+            const std::string& thread_name);
+        
     ~LogEvent();
     
     const char* GetFile() const {return m_file; }
@@ -90,21 +100,24 @@ public:
     std::string GetContent() const { return m_ss.str();}
     std::shared_ptr<Logger> GetLogger() const { return m_logger; }
     LogLevel::Level GetLevel() const { return m_level; }
+    std::string GetThreadName() const { return m_threadName; }
 
     std::stringstream& GetSS() { return m_ss;}
     void Format(const char* fmt, ...);
     void Format(const char* fmt, va_list al);
+
 private:
     const char* m_file = nullptr; // 文件名
-    int32_t m_line = 0;           // 行号
-    uint32_t m_elapse = 0;        // 程序启动开始到现在的毫秒数
-    uint32_t m_threadId = 0;       // 线程id
-    uint64_t m_fiberId = 0;       // 协程id
-    uint64_t m_time = 0;          // 时间戳
-    std::stringstream m_ss;
+    int32_t     m_line = 0;           // 行号
+    uint32_t    m_elapse = 0;        // 程序启动开始到现在的毫秒数
+    uint32_t    m_threadId = 0;       // 线程id
+    uint64_t    m_fiberId = 0;       // 协程id
+    uint64_t    m_time = 0;          // 时间戳
+    std::string m_threadName;     // 线程名称
 
-    std::shared_ptr<Logger> m_logger;
-    LogLevel::Level m_level;
+    LogLevel::Level     m_level; 
+    std::stringstream   m_ss;         // 日志信息
+    std::shared_ptr<Logger> m_logger; // 日志生成器
 };
 
 class LogEventWrap {
