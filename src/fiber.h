@@ -5,8 +5,9 @@
 #include "thread.h"
 #include <functional>
 
-
 namespace dx  {
+
+class Schduler;
 
 class MallocStackAllocator {
 public:
@@ -21,6 +22,7 @@ public:
 
 
 class Fiber : public std::enable_shared_from_this<Fiber> {
+friend class Scheduler;
 public:
     typedef std::shared_ptr<Fiber> ptr;
     
@@ -40,6 +42,8 @@ public:
     void SwapIn();
     void SwapOut();
     uint64_t GetId() const { return m_id;};
+    int GetState() const { return m_state;}
+    void SetState(const Fiber::State state) { m_state = state; }
 
 public:
     static void SetThis(Fiber* f);

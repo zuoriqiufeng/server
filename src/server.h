@@ -21,5 +21,6 @@
 #include "macro.h"
 #include "fiber.h"
 #include "mutex.h"
+#include "scheduler.h"
 
 #endif

@@ -31,7 +31,7 @@ public:
     void Schedule(FiberOrCb fc, int thread = -1) {
         bool need_tickle = false;
         {
-            MutexType::Lock g(m_lock);
+            MutexType::MutexGuard g(m_lock);
             need_tickle = ScheduleNoLock(fc, thread);
         }
         if(need_tickle) {
@@ -43,7 +43,7 @@ public:
     void Schedule(InputIterator begin, InputIterator end) {
         bool need_tickle = false;
         {
-            MutexType::Lock() g(m_lock);
+            MutexType::MutexGuard g(m_lock);
             while(begin != end) {
                 need_tickle = ScheduleNoLock(&*begin) || need_tickle;
                 begin++;
@@ -56,7 +56,11 @@ public:
     }
 
 protected:
+    void Run();
+    void SetThis();
+    virtual bool Stopping();
     virtual void Tickle();
+    virtual void Idle();
 
 private:
     template<class FiberOrCb>
@@ -80,7 +84,7 @@ private:
             fiber.swap(*f);
         }
 
-        FiberAndThread(std::function<void()>  new_cb, int thr) : cb(cb), thread(thr) {}
+        FiberAndThread(std::function<void()>  new_cb, int thr) : cb(new_cb), thread(thr) {}
         FiberAndThread(std::function<void()>* new_cb, int thr) : thread(thr) {
             cb.swap(*new_cb);
         }
@@ -99,11 +103,17 @@ private:
     std::string m_name;
     std::list<FiberAndThread> m_fibers;
     std::vector<Thread::ptr> m_threads;
+    Fiber::ptr m_rootFiber;
 
+protected:
+    std::vector<int> m_thIds;
+    size_t m_thCnt = 0;
+    std::atomic<size_t> m_actThdCnt = {0};
+    std::atomic<size_t> m_idleThCnt = {0};
+    bool m_stopping = true;
+    bool m_aotuStop = false;
+    int m_rootThd = 0;
 };
-
-
-
 
 
 

@@ -69,6 +69,10 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize)
 }
 
 
+/**
+ * @brief Destroy the Fiber:: Fiber object
+ * 
+ */
 Fiber::~Fiber() {
     --s_fibers_cnt;
     if(m_stack) {
@@ -205,6 +209,7 @@ void Fiber::MainFunc() {
     Fiber::ptr cur = GetThis();
     SERVER_ASSERT(cur);
     try {
+        // 执行方法
         cur->m_cb();
         cur->m_cb = nullptr;
         cur->m_state = TERM;
