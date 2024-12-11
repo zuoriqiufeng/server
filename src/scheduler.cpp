@@ -24,7 +24,7 @@ static thread_local Fiber* t_fiber = nullptr;
  * @brief Construct a new Scheduler:: Scheduler object
  * 
  * @param  threads 线程数量
- * @param  use_caller 
+ * @param  use_caller 是否将当前线程也作为调度线程
  * @param  name 协程调度名称
  */
 Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name) {
@@ -40,8 +40,8 @@ Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name) {
         m_rootFiber.reset(new Fiber(std::bind(&Scheduler::Run, this)));
         Thread::SetNameS(m_name);
 
-        t_fiber = m_rootFiber.get();
-        m_rootThd = GetThreadId();
+        t_fiber     = m_rootFiber.get();
+        m_rootThd   = GetThreadId();
         m_thIds.push_back(m_rootThd);
     } else {
         m_rootThd = -1;
@@ -77,20 +77,24 @@ void Scheduler::Start() {
     m_stopping = false;
     SERVER_ASSERT(m_threads.empty());
     m_threads.resize(m_thCnt);
+
     for(size_t i = 0; i < m_thCnt; i++) {
         m_threads[i].reset(new Thread(std::bind(&Scheduler::Run, this), 
             m_name + "-" + std::to_string(i)));
         m_thIds.push_back(m_threads[i]->GetId());
     }
 
+    if(m_rootFiber) {
+        m_rootFiber->SwapIn();
+    }
 }
 
 /**
- * @brief 
+ * @brief 停止调度
  * 
  */
 void Scheduler::Stop() {
-    m_aotuStop = false;
+    m_aotuStop = true;
     if(m_rootFiber && m_thCnt == 0 
         && (m_rootFiber->GetState() == Fiber::TERM || m_rootFiber->GetState() == Fiber::INIT)) {
         
@@ -126,6 +130,10 @@ void Scheduler::Stop() {
     }
 }
 
+/**
+ * @brief 设置当前调度者
+ * 
+ */
 void Scheduler::SetThis() {
     t_scheduler = this;
 }
@@ -135,6 +143,8 @@ void Scheduler::SetThis() {
  * 
  */
 void Scheduler::Run() {
+    SERVER_LOG_INFO(g_logger) << "Scheduler::Run()";
+
     // 设置当前线程的Scheduler
     SetThis();
 
@@ -240,6 +250,10 @@ void Scheduler::Tickle() {
 
 }
 
+/**
+ * @brief 空闲协程办法
+ * 
+ */
 void Scheduler::Idle() {
 
 }

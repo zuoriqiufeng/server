@@ -29,21 +29,22 @@ link_libraries(server)
 # add_dependencies(test1 server)
 # target_link_libraries(test1 server)
 
-add_executable(test_kama tests/test_kama.cpp)
-add_executable(test_config tests/test_config.cpp)
-add_dependencies(test_config server)
-force_redefine_file_macro_for_sources(test_config)
 # target_link_libraries(server ${YAML_CPP_LIBRARIES})
 #target_link_libraries(test_config server)
 
-
+add_executable(test_kama tests/test_kama.cpp)
+add_executable(test_config tests/test_config.cpp)
 add_executable(test_thread tests/test_thread.cpp)
 add_executable(test_util tests/test_util.cpp)
 add_executable(test_fiber tests/test_fiber.cpp)
+add_executable(test_scheduler tests/test_scheduler.cpp)
 #add_dependencies(test_thread server)
+
+force_redefine_file_macro_for_sources(test_scheduler)
 force_redefine_file_macro_for_sources(test_fiber)
 force_redefine_file_macro_for_sources(test_thread)
-# target_link_libraries(test_thread server)
+force_redefine_file_macro_for_sources(test_config)
+force_redefine_file_macro_for_sources(test_util)
 
 SET(CMAKE_CACHEFILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
 SET(CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)

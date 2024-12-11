@@ -7,7 +7,7 @@
 
 namespace dx  {
 
-class Schduler;
+class Scheduler;
 
 class MallocStackAllocator {
 public:
@@ -60,18 +60,15 @@ private:
 
 private:
     void*    m_stack = nullptr;
-    State    m_state;
-    uint64_t m_id;
-    uint32_t m_stackSize;
+    State    m_state = INIT;
+    uint64_t m_id = 0;
+    uint32_t m_stackSize = 0;
     ucontext_t m_ctx;
 
     // 真正执行的协程方法
     std::function<void()> m_cb;
     
 };
-
-
-
 
 
 

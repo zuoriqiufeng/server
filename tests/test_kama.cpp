@@ -4,58 +4,49 @@
 #include <stack>
 #include <queue>
 #include <climits>
+#include <algorithm>
 using namespace std;
 
 int dx[4] = {0, 0, -1, 1};
 int dy[4] = {1, -1, 0 , 0};
 
 
+vector<vector<int>> threeSum(vector<int>& nums) {
+    int n = nums.size();
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> ans;
+    int l = 0, r = n - 1;
+    int mmin = INT_MAX, mmax = INT_MIN;
+    while(l < r) {
+        size_t t = ans.size();
+        for(int i = l + 1; i < r; ++i) {
+            mmin = min(mmin, nums[i]);
+            mmax = max(mmax, nums[i]);
+            if(nums[i] + nums[l] + nums[r] == 0)
+                ans.push_back({nums[i], nums[l], nums[r]});
+        }
+
+        if(ans.size() > t) {
+            --r;
+            ++l;
+        } else if(mmin + nums[r] + nums[l] > 0) {
+            --r;
+        } else if(mmax + nums[r] + nums[l] < 0)
+            ++l;
+    }
+
+    return ans;
+}
+
 int main() {
-    int n, m, j, k;
-    cin >> n >> m >> j >> k;
-    vector<vector<int>> grid(m, vector<int>(n, 0));
-    for(int i = 0; i < m; i++) {
-        for(int t = 0; t < n; t++) {
-            cin >> grid[i][t];
-        }
-    }
+    // char d = 'l';
+    // char * t = NULL;
+    // char * m = NULL;
     
-    vector<vector<bool>> trix(m, vector<bool>(n, false));
-    vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
-    dp[j][k] = 0;
-    queue<pair<int, int>> st;
-    st.push(make_pair(j, k));
-    while(st.size() != 0) {
-        pair<int, int> idx = st.front();
-        st.pop();
-        
-        for(int i = 0; i < 4; i++) {
-            int x = idx.first + dx[i];
-            int y = idx.second + dy[i];
-            if((x >= 0 && x < m) && (y >= 0 && y < n)) {
-                if(grid[x][y] != 0 && !trix[x][y]) {
-                    dp[x][y] = min(dp[x][y], grid[idx.first][idx.second] + dp[idx.first][idx.second]);
-                    st.push(make_pair(x, y));
-                }
-                trix[x][y] = true;
-            }
-        }
-    }
-    int ans = 0;
-    for(int i = 0; i < m; i++) {
-        for(int t = 0; t < n; t++) {
-            if(grid[i][t] != 0 && dp[i][t] == INT_MAX) {
-                cout << -1 << endl;
-                return 0;
-            }
-            
-            if(grid[i][t] != 0) {
-                ans = max(ans, dp[i][t]);
-            }
-        }
-    }
-    
-        cout << ans << endl;
+    // __sync_bool_compare_and_swap(&m, t, &d);
+    // cout << *m << ' ' << d << endl;
+    vector<int> t = {-1,0,1,2,-1,-4};
+    vector<vector<int>> ans = threeSum(t);
     
     return 0;
 }
